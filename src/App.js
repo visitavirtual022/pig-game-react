@@ -1,5 +1,5 @@
 import './App.css'
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import Player from './Player/Player'
 
 // 1. definir variables de estado usando useState (activePlayer, score, current, diceNumber)
@@ -14,10 +14,43 @@ import Player from './Player/Player'
 // 9. manejar el cambio de jugador activo cuando se hace click en el botón New game
 
 function App() {
-  const [activePlayer, setActivePlayer] = useState(2)
-  const [score, setScore] = useState([3, 6])
-  const [current, setCurrent] = useState(7)
-  const [diceNumber, setDiceNumber] = useState(3)
+  const [activePlayer, setActivePlayer] = useState(1)
+  const [score, setScore] = useState([0, 0])
+  const [current, setCurrent] = useState(0)
+  const [diceNumber, setDiceNumber] = useState(0)
+
+  const handleHold = () => {
+    // para cambiar el score, se debe definir una nueva variable
+    // no modificamos el array, creamos uno nuevo!!!!
+    const newScore = [...score]
+    // newScore[activaPlayer -1] = newScore[activePlayer -1] + current
+    newScore[activePlayer - 1] += current
+    setScore(newScore)
+    setActivePlayer(activePlayer === 1 ? 2 : 1)
+    setCurrent(0)
+  }
+  const handleNewGame = () => {
+    setActivePlayer(1)
+    setScore([0, 0])
+    setCurrent(0)
+    setDiceNumber(0)
+  }
+
+  const handleRollDice = () => {
+    // const randomNumber = Math.floor(Math.random() * 6) + 1
+    // setDiceNumber(randomNumber)
+    setDiceNumber(Math.floor(Math.random() * 6) + 1)
+  }
+
+  useEffect(() => {
+    if (diceNumber === 1) {
+      setActivePlayer((activePlayer) => (activePlayer === 1 ? 2 : 1))
+      setCurrent(0)
+    } else {
+      // setCurrent (current + diceNumber)
+      setCurrent((current) => current + diceNumber)
+    }
+  }, [diceNumber])
 
   return (
     <main>
@@ -40,9 +73,15 @@ function App() {
           className="dice"
         />
       )}
-      <button className="btn btn--new">🔄 New game</button>
-      <button className="btn btn--roll">🎲 Roll dice</button>
-      <button className="btn btn--hold">📥 Hold</button>
+      <button className="btn btn--new" onClick={handleNewGame}>
+        🔄 New game
+      </button>
+      <button className="btn btn--roll" onClick={handleRollDice}>
+        🎲 Roll dice
+      </button>
+      <button className="btn btn--hold" onClick={handleHold}>
+        📥 Hold
+      </button>
     </main>
   )
 }
